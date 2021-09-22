@@ -13,7 +13,8 @@ class Post(models.Model):
         return '{}'.format(self.title)
 
     def get_absolute_url(self):
-        return reverse('post_detail_url',kwargs={'slug':self.slug+'1'})
+        #return reverse('post_detail_url',kwargs={'slug':self.slug+'1'})
+        return reverse('post_detail_url', kwargs={'slug': self.slug})
 
 class Tag(models.Model):
     title = models.CharField(max_length=150)
