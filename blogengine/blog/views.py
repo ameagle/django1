@@ -5,6 +5,7 @@ from .models import Post, Tag
 from django.views.generic import View
 from .utils import ObjectDetailMixin,ObjectCreateMixin
 from .forms import TagForm, PostForm
+from rest_framework import routers, serializers, viewsets, permissions
 
 def posts_list(request):
     #return HttpResponse('<h1>Hello world1</h1>')
@@ -67,3 +68,34 @@ class TagCreate(ObjectCreateMixin,View):
     #         return redirect(new_tag)
     #     return render(request,'blog/tag_create.html',context={'form':bound_form})
     #     #print(request.POST)
+
+
+
+##### Api
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id','title', 'slug','body']
+
+class PostViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class TagSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'title', 'slug']
+
+class TagViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticated]
