@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from .models import Post, Tag
+from rest_framework.decorators import api_view
+
+from .models import *
 from django.views.generic import View
 from .utils import ObjectDetailMixin,ObjectCreateMixin
 from .forms import TagForm, PostForm
 from rest_framework import routers, serializers, viewsets, permissions
+from rest_framework.response import Response
 
 def posts_list(request):
     #return HttpResponse('<h1>Hello world1</h1>')
@@ -94,6 +97,35 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
         model = Tag
         fields = ['id', 'title', 'slug']
 
+
+
+#class TagPostRawSerializer(serializers.HyperlinkedModelSerializer):
+#    class Meta:
+#        model = Tag
+#        fields = ['id', 'title', 'type']
+
+
+class TagPostVirtualSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TagPostVirtual
+        fields = "__all__"
+
+
+class TagPostRawSerializer2(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField(max_length=150)
+    type = serializers.CharField(max_length=50)
+    def create(self, validated_data):
+         """
+         Create and return a new `Snippet` instance, given the validated data.
+         """
+         return
+
+    def update(self, instance, validated_data):
+
+        return
+
+
 class TagSerializer2(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(max_length=150)
@@ -121,3 +153,43 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer2
     permission_classes = [permissions.IsAuthenticated]
+
+
+@api_view(['GET'])
+def tags_custom_list(request):
+    """
+    List all code posts
+    """
+
+
+    if request.method == 'GET':
+        tags = Tag.objects.filter(id__gt=5)
+        serializer = TagSerializer2(tags, many=True)
+        return Response(serializer.data)
+
+
+class TagPostVirtualRawQueryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    sql = """SELECT bp.id as id, bp.title as title, 'type_post' as type FROM blog_post as bp WHERE bp.id >%s
+              UNION SELECT bt.id as id, bt.title as title, 'type_tag' as type FROM blog_tag as bt WHERE bt.id >%s""";
+
+    print(sql)
+    queryset =  TagPostVirtual.objects.raw(sql,["1","5"])
+    #serializer_class = TagPostRawSerializer2 #not wokk paginations for Tag
+    serializer_class = TagPostVirtualSerializer  # not catch any field
+    permission_classes = [permissions.IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        print ("retrieve:",request)
+        return super().retrieve(self, request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        print("req_list_GET:" , request.GET)
+        #print("req_list_META:" , request.META)
+        print("req_list_AUTH:", request.auth)
+        return super().list(self, request, *args, **kwargs)
+
+
+

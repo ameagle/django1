@@ -7,14 +7,19 @@ from rest_framework.schemas import get_schema_view # new
 router = routers.DefaultRouter()
 router.register(r'posts', PostViewSet) # blog/api/posts/
 router.register(r'tags', TagViewSet)    # blog/api/tags/
+router.register(r'raw', TagPostVirtualRawQueryViewSet)    # blog/api/raw/
+#router.register(r'ctags', tags_custom_list)    # blog/api/ctags/
+
 
 schema_view = get_schema_view(title='Blog API') # new
 
 
 urlpatterns = [
     #http://mw.ixi.ru:8001/users/2/?format=json
-    path('api/', include(router.urls)),
     path('',                posts_list,     name='posts_list_url'),
+    path('api/', include(router.urls)),
+    path('api/ctags/',tags_custom_list,name='tags_custom_list'), #blog/api/ctags/
+
     path('post/create/',     PostCreate.as_view(),name='post_create_url'), #post_create_url --alias for full path /blog/post/create/
     path('post/<str:slug>/',PostDetail.as_view(),   name='post_detail_url'),
     path('tags/',           tags_list,      name='tags_list_url'),

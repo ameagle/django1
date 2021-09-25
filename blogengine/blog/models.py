@@ -39,3 +39,20 @@ class Tag(models.Model):
 
     def __str__(self):
         return '{}_{}'.format(self.title,self.slug)
+
+#for union sql kostyl fro pagination add calculable field type
+class TagPostVirtual(models.Model):
+    title = models.CharField(max_length=150)
+    type = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = "blog_virt_tag_post"
+
+    def get_absolute_url(self):
+        return reverse('TagPostVirtual',kwargs={'slug':self.slug})
+
+    def __str__(self):
+        return '{}_{}'.format(self.title, self.type)
+
+
+
