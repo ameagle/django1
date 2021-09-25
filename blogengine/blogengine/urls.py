@@ -20,6 +20,7 @@ from .view import hello
 
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets, permissions
+from rest_framework.schemas import get_schema_view # new
 
 # # Serializers define the API representation.
 # class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -68,13 +69,15 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+router.register(r'users', UserViewSet) #http://mw.ixi.ru:8001/users/2/?format=json
 router.register(r'groups', GroupViewSet)
 
+schema_view = get_schema_view(title='API') # new
 
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls')),
     path('api-auth/', include('rest_framework.urls')),
+    path('schema/', schema_view),  # new
 ]

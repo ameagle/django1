@@ -78,11 +78,13 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         model = Post
         fields = ['id','title', 'slug','body']
 
+
 class PostViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Post.objects.all()
+    print("queryset.str:--------------"+str(queryset.query))
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -92,10 +94,30 @@ class TagSerializer(serializers.HyperlinkedModelSerializer):
         model = Tag
         fields = ['id', 'title', 'slug']
 
+class TagSerializer2(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField(max_length=150)
+    slug = serializers.SlugField(max_length=150)
+    def create(self, validated_data):
+        """
+        Create and return a new `Snippet` instance, given the validated data.
+        """
+        return Tag.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Snippet` instance, given the validated data.
+        """
+        print (validated_data)
+        instance.title = validated_data.get('title', instance.title)
+        instance.slug = validated_data.get('slug', instance.slug)
+        instance.save()
+        return instance
+
 class TagViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Tag.objects.all()
-    serializer_class = TagSerializer
+    serializer_class = TagSerializer2
     permission_classes = [permissions.IsAuthenticated]
