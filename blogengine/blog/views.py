@@ -99,10 +99,10 @@ class TagSerializer2(serializers.Serializer):
     title = serializers.CharField(max_length=150)
     slug = serializers.SlugField(max_length=150)
     def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return Tag.objects.create(**validated_data)
+         """
+         Create and return a new `Snippet` instance, given the validated data.
+         """
+         return Tag.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
