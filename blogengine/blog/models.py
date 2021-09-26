@@ -47,6 +47,7 @@ class TagPostVirtual(models.Model):
 
     class Meta:
         db_table = "blog_virt_tag_post"
+        #proxy=True
 
     def get_absolute_url(self):
         return reverse('TagPostVirtual',kwargs={'slug':self.slug})

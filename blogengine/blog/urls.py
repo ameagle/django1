@@ -19,6 +19,7 @@ urlpatterns = [
     path('',                posts_list,     name='posts_list_url'),
     path('api/', include(router.urls)),
     path('api/ctags/',tags_custom_list,name='tags_custom_list'), #blog/api/ctags/
+    path('raw/',TagPostVirtualRawQueryView.as_view(),name='tags_raw'), #blog/raw/
 
     path('post/create/',     PostCreate.as_view(),name='post_create_url'), #post_create_url --alias for full path /blog/post/create/
     path('post/<str:slug>/',PostDetail.as_view(),   name='post_detail_url'),
